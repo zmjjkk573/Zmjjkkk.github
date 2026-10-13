@@ -1,0 +1,72 @@
+<HTML><!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>老虎机摇号（排除00）</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:#222;color:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.machine{background:#8b0000;padding:24px;border-radius:16px;border:8px solid gold;text-align:center}
+.slot-wrap{display:flex;gap:10px;margin:20px 0}
+.slot{
+  width:90px;height:110px;background:#fff;color:#000;border-radius:8px;
+  font-size:60px;font-weight:bold;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;border:3px solid #333
+}
+button{padding:12px 28px;font-size:18px;border:none;border-radius:8px;margin:0 6px;cursor:pointer;font-weight:bold}
+#spin{background:gold;color:#000}
+#reset{background:#555;color:#fff}
+button:disabled{background:#777;cursor:not-allowed}
+</style>
+</head>
+<body>
+<div class="machine">
+  <div class="slot-wrap">
+    <div class="slot" id="ten">0</div>
+    <div class="slot" id="unit">1</div>
+  </div>
+  <button id="spin">开始摇奖</button>
+  <button id="reset">重置</button>
+</div>
+<script>
+const ten=document.getElementById('ten');
+const unit=document.getElementById('unit');
+const spin=document.getElementById('spin');
+const reset=document.getElementById('reset');
+let rolling=false;
+
+// 获取合法结果，排除 00
+function getValidNum(){
+  let t,u;
+  do{
+    t = Math.floor(Math.random()*5); //0~4
+    u = Math.floor(Math.random()*10); //0~9
+  }while(t===0 && u===0); //不能是00
+  return {t,u};
+}
+
+spin.onclick=()=>{
+  if(rolling)return;
+  rolling=true;
+  spin.disabled=true;
+  let c=0;
+  const t=setInterval(()=>{
+    //滚动过程可以出现00，只是最终结果不会是00
+    ten.textContent=Math.floor(Math.random()*5);
+    unit.textContent=Math.floor(Math.random()*10);
+    c++;
+    if(c>=30){
+      clearInterval(t);
+      const res = getValidNum();
+      ten.textContent = res.t;
+      unit.textContent = res.u;
+      rolling=false;
+      spin.disabled=false;
+    }
+  },70);
+}
+reset.onclick=()=>{ten.textContent='0';unit.textContent='1'}
+</script>
+</body>
+</html>
+</HTML>
